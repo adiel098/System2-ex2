@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 #include "Graph.hpp"
-#include <ostream>
 #include <sstream>
 
  namespace ariel{
@@ -44,26 +43,24 @@
         
 
         
-        std::string Graph::printGraph()
+        std::string Graph::printGraph()const
         {
 
             std::string output;
-
-            for (size_t i = 0; i < get_countVertices(); ++i) {
+        for (size_t i = 0; i < get_matrix().size(); ++i) {
             output += "[";
-            for (size_t j = 0; j < get_matrix()[i].size(); ++j) {
+            for (size_t j = 0; j < get_matrix().size(); ++j) {
                 output += std::to_string(get_matrix()[i][j]);
-                if (j < get_matrix()[i].size() - 1) {
+                if (j < get_matrix().size() - 1) {
                     output += ", ";
                 }
             }
             output += "]";
-            if (i < get_matrix()[i].size() - 1) {
+            if (i < get_matrix().size() - 1) {
                 output += "\n";
             }
-                }
-
-            return output;
+        }
+        return output;
         }
 
         void Graph::loadGraph(const std::vector<std::vector<int>>& adj_Mat)
@@ -132,11 +129,10 @@
                 }
             
         }
-        std::ostream &operator<<(std::ostream& output, const Graph& g)
+        std::ostream& operator<<(std::ostream& output, const Graph& g)
 
         {
-            Graph g1 =g;
-            output<<g1.printGraph();
+            output << g.printGraph();
             return output;
         }
 
