@@ -1,202 +1,113 @@
 //ID:207988213
-    //E-mail: haleviadiel@gmail.com
+//E-mail: haleviadiel@gmail.com
 
-    #include <iostream>
-    #include <vector>
-    #include "Graph.hpp"
-    #include <sstream>
-    #include <ostream>
+#include <iostream>
+#include <vector>
+#include "Graph.hpp"
+#include <ostream>
+#include <sstream>
 
-    namespace ariel{
+ namespace ariel{
 
-            // Default constructor
-            Vertex::Vertex() 
-            {}
+        
+        // Default constructor
+        Graph::Graph()
+        { }
 
-
-            Vertex::Vertex(int data)
-            {this->data =data;}
-
-
-        int Vertex::get_data() const
+        bool Graph::get_isWeighted()const
         {
-            return data;
+            return isWeighted;
         }
 
-
-            std::vector<Edge>& Vertex::get_Neighbours()
-            {
-                return this->neighbours;
-            }
-            const std::vector<Edge>& Vertex::get_Neighbours() const        
-            {
-                return this->neighbours;
-            }
-
-            // Default constructor
-            Edge::Edge()
-            {}
-            
-            Edge::Edge(Vertex& dest,int weight)
-            {
-                this->dest = &dest;
-                this-> weight = weight;
-            }
-
-
-            int Edge::get_weight()const
-            {
-                return weight;
-            }
-            Vertex& Edge::get_dest()const
-            {
-                return *dest;
-            }   
-            // Default constructor
-            Graph::Graph()
-            { }
-
-            bool Graph::get_isWeighted()
-            {
-                return isWeighted;
-            }
-
-            Vertex& Graph::get_vertex(int data)
-            {
-                if (data >= 0 && data < vertices.size()) 
-                {
-                    return vertices[data];
-                } 
-                else 
-                {  
-                    throw std::out_of_range("Index out of range");
-                    // or return nullptr;
-                }
-            }
-            std::vector<Vertex>Graph::get_graphVertices()
-            {
-                return vertices;
-            }
-            bool Graph::get_graphDirected()
-            {
-                return isDirected;
-            }
-
-            void Graph::set_graphDirected(bool flag)
-            {
-                this->isDirected = flag;
-            }
-            int Graph::get_countVertices()const
-            {
-                return countVertices;
-            }
-            int Graph::get_countEdges()const
-            {
-                return countEdges;
-
-            }
-
-            void Graph::set_isWeighted(bool flag)
-            {
-                this->isWeighted = flag;
-            }
-
-            void Graph::add_Neighbour(Vertex& source,Vertex& destination,int weight)
-            {
-                if(source.get_data() < vertices.size())
-                {
-                    Edge* e =  new Edge(destination,weight);
-                    vertices[source.get_data()].get_Neighbours().push_back(*e);
-                    countEdges++;
-
-                }
-                else
-                {
-                    throw std::out_of_range("Source index out of range");
-                }
-                
-            }
-
-            void Graph::add_Vertex(Vertex v)
-            {
-                vertices.push_back(v);
-                countVertices++;
-
-            }
-            std::string Graph::printGraph()
-            {
-            std::string output;
-            
-            for (size_t i = 0; i < vertices.size(); ++i) {
-                const auto& row = vertices[i].get_Neighbours();
-                output += "[";
-                for (size_t j = 0; j < row.size(); ++j) {
-                    output += std::to_string(row[j].get_weight());
-                    if (j < row.size() - 1) {
-                        output += ", ";
-                    }
-                }
-                output += "]";
-                if (i < vertices.size() - 1) {
-                    output += "\n";
-                }
-            }
-            
-            return output;
         
+        bool Graph::get_graphDirected()const
+        {
+            return isDirected;
+        }
+        std::vector<std::vector<int>> Graph::get_matrix()const
+        {
+            return this->adj_Mat;
+        }
+
+        
+        int Graph::get_countVertices()const
+        {
+            return countVertices;
+        }
+        int Graph::get_countEdges()const
+        {
+            return countEdges;
+        }
+
+        
+
+        
+
+        
+        std::string Graph::printGraph()
+        {
+
+            std::string output;
+
+            for (size_t i = 0; i < get_countVertices(); ++i) {
+            output += "[";
+            for (size_t j = 0; j < get_matrix()[i].size(); ++j) {
+                output += std::to_string(get_matrix()[i][j]);
+                if (j < get_matrix()[i].size() - 1) {
+                    output += ", ";
+                }
+            }
+            output += "]";
+            if (i < get_matrix()[i].size() - 1) {
+                output += "\n";
+            }
+                }
+
+            return output;
+        }
+
+        void Graph::loadGraph(const std::vector<std::vector<int>>& adj_Mat)
+        {
+
+            countVertices = adj_Mat.size();
+            countEdges = 0;
+            isDirected=true;
+            this->adj_Mat=adj_Mat;
+
+            if(adj_Mat.size() != adj_Mat[0].size())
+            {
+                throw std::invalid_argument("Invalid graph: The graph is not a square matrix.\n");
             }
 
-            void Graph::loadGraph(const std::vector<std::vector<int>>& adj_Mat)
+            //check if directed
+            for(int i=0;i<adj_Mat.size();i++)
             {
-                countVertices = 0;
-                countEdges = 0;
-                isWeighted = false;
-                vertices.clear(); 
-                if(adj_Mat.size() != adj_Mat[0].size())
-                {
-                    throw std::invalid_argument("Invalid graph: The graph is not a square matrix.\n");
-                }
-
-                // Use 'this' pointer to access the current object
-                for (size_t i = 0; i < adj_Mat.size(); i++)
-                {
-                    Vertex* v = new Vertex(i);
-                    this->add_Vertex(*v);
-                }
-
-                for (size_t j = 0; j < adj_Mat.size(); j++)
-                {
-                    Vertex& source = this->get_vertex(j);
-                    for (size_t k = 0; k < adj_Mat.size(); k++)
-                    {
-                        if (adj_Mat[j][k] > 1)
+                for(int j=0;j<adj_Mat.size();j++)
                         {
-                            this->set_isWeighted(true);
+                             if(adj_Mat[i][j]!=adj_Mat[j][i])   
+                             {
+                                isDirected=false;
+                             }
+                             if(adj_Mat[i][j]!=0)
+                             {
+                                countEdges++;
+                             }
                         }
-
-                        if(adj_Mat[j][k] !=adj_Mat[k][j])
-                        {
-                            set_graphDirected(true);
-                        } 
-                        
-                    
-                            
-                                Vertex& dest = this->get_vertex(k);
-                            this->add_Neighbour(source, dest, adj_Mat[j][k]);
-                            
-                        }
-                        
-                    
-                    }
                 
             }
+            if(!isDirected)
+            {
+                countEdges=countEdges/2;
+            }
             
+        }
+        
 
         Graph Graph:: operator+(const Graph& other) const
         {
             isSameSize(other,*this) ;
-            std::vector<std::vector<int>> m1=toAdjacencyMatrix(other);
-            std::vector<std::vector<int>> m2=toAdjacencyMatrix(*this);
+            std::vector<std::vector<int>> m1=other.get_matrix();
+            std::vector<std::vector<int>> m2=get_matrix();
             int n=m1.size();
 
             std::vector<std::vector<int>> result(n,std::vector<int>(n,0));
@@ -215,41 +126,25 @@
         void Graph::isSameSize(const Graph& g1,  const Graph& g2) const
         {
 
-        if(g1.get_countVertices()!=g2.get_countVertices())
+        if(g1.get_matrix().size()!=g2.get_matrix().size())
                 {
                     throw std::invalid_argument("Invalid opertaion: The graphs are not in the same size.\n");
                 }
             
         }
-        
-        std::vector<std::vector<int>> Graph::toAdjacencyMatrix(const Graph &g) const
-        {
-            std::vector<std::vector<int>> adjMatrix(g.get_countVertices(), std::vector<int>(g.get_countVertices(), 0));
-
-            for (const Vertex& v : g.vertices) {
-                int srcIdx = v.get_data();
-                for (const Edge& e : v.get_Neighbours()) {
-                    int destIdx = e.get_dest().get_data();
-                    adjMatrix[srcIdx][destIdx] = e.get_weight();
-                }
-            }
-
-            return adjMatrix;
-        }
-
         std::ostream &operator<<(std::ostream& output, const Graph& g)
 
         {
-        Graph g1 =g;
+            Graph g1 =g;
             output<<g1.printGraph();
             return output;
-    }
+        }
 
     /// Operator +=
     Graph& Graph::operator+=(const Graph& other) {
         // Convert both graphs to adjacency matrices
-        std::vector<std::vector<int>> m1 = toAdjacencyMatrix(*this);
-        std::vector<std::vector<int>> m2 = toAdjacencyMatrix(other);
+        std::vector<std::vector<int>> m1 = get_matrix();
+        std::vector<std::vector<int>> m2 = other.get_matrix();
         
         // Make sure the matrices have the same size
         isSameSize(other, *this);
@@ -270,8 +165,8 @@
     // Operator -
     Graph Graph::operator-(const Graph& other) const {
         // Convert both graphs to adjacency matrices
-        std::vector<std::vector<int>> m1 = toAdjacencyMatrix(*this);
-        std::vector<std::vector<int>> m2 = toAdjacencyMatrix(other);
+        std::vector<std::vector<int>> m1 = get_matrix();
+        std::vector<std::vector<int>> m2 = other.get_matrix();
 
         // Make sure the matrices have the same size
         isSameSize(other, *this);
@@ -292,8 +187,8 @@
     // Operator -=
     Graph& Graph::operator-=(const Graph& other) {
         // Convert both graphs to adjacency matrices
-        std::vector<std::vector<int>> m1 = toAdjacencyMatrix(*this);
-        std::vector<std::vector<int>> m2 = toAdjacencyMatrix(other);
+        std::vector<std::vector<int>> m1 = get_matrix();
+        std::vector<std::vector<int>> m2 = other.get_matrix();
 
         // Make sure the matrices have the same size
         isSameSize(other, *this);
@@ -320,7 +215,7 @@
     // Unary -
     Graph Graph::operator-() const {
         // Convert the graph to an adjacency matrix
-        std::vector<std::vector<int>> m = toAdjacencyMatrix(*this);
+        std::vector<std::vector<int>> m = get_matrix();
 
         // Negate all elements of the adjacency matrix and create a new graph
         std::vector<std::vector<int>> result(m.size(), std::vector<int>(m.size(), 0));
@@ -339,8 +234,8 @@
      {
      isSameSize(other,*this);
          // Convert the graphs to adjacency matrices
-    std::vector<std::vector<int>> matrix1 = toAdjacencyMatrix(*this);
-    std::vector<std::vector<int>> matrix2 = toAdjacencyMatrix(other);
+    std::vector<std::vector<int>> matrix1 = get_matrix();
+    std::vector<std::vector<int>> matrix2 = other.get_matrix();
 
     
     std::vector<std::vector<int>> resultMatrix(countVertices, std::vector<int>(countVertices, 0));
@@ -384,10 +279,13 @@ bool Graph::operator>(const Graph& other) const {
     
 bool Graph::operator<(const Graph& other) const{
         
-    std::vector<std::vector<int>> matrix1 = toAdjacencyMatrix(*this);
-    std::vector<std::vector<int>> matrix2 = toAdjacencyMatrix(other);
+    std::vector<std::vector<int>> matrix1 = get_matrix();
+    std::vector<std::vector<int>> matrix2 = other.get_matrix();
     bool flag =true;
     //we will check if any number in one matrix is < || = the other matrix, to check if contained
+    if(*this == other)
+        return false;
+
     for (size_t i = 0; i < matrix1.size(); ++i) {
         for (size_t j = 0; j < matrix1[i].size(); ++j) {
             if (matrix1[i][j] >matrix2[i][j]) {
@@ -422,8 +320,8 @@ bool Graph::operator==(const Graph& other) const {
         return false;
     }
 
-    std::vector<std::vector<int>> matrix1 = toAdjacencyMatrix(*this);
-    std::vector<std::vector<int>> matrix2 = toAdjacencyMatrix(other);
+    std::vector<std::vector<int>> matrix1 = get_matrix();
+    std::vector<std::vector<int>> matrix2 = other.get_matrix();
 
     // Compare the adjacency matrices element-wise
     for (size_t i = 0; i < matrix1.size(); ++i) {
@@ -441,7 +339,7 @@ bool Graph::operator==(const Graph& other) const {
 
     Graph& Graph::operator++() {
         // Convert the graph to an adjacency matrix
-        std::vector<std::vector<int>> m = toAdjacencyMatrix(*this);
+        std::vector<std::vector<int>> m = get_matrix();
 
         // Increment all elements of the adjacency matrix and load the result back into this graph
         for (size_t i = 0; i < m.size(); ++i) {
@@ -465,7 +363,7 @@ bool Graph::operator==(const Graph& other) const {
     
     Graph& Graph::operator--() {
         // Convert the graph to an adjacency matrix
-        std::vector<std::vector<int>> m = toAdjacencyMatrix(*this);
+        std::vector<std::vector<int>> m = get_matrix();
 
         // Decrement all elements of the adjacency matrix and load the result back into this graph
         for (size_t i = 0; i < m.size(); ++i) {
@@ -490,7 +388,7 @@ Graph& Graph::operator/=(int scalar) {
         throw std::invalid_argument("Division by zero");
     }
 
-    std::vector<std::vector<int>> adjMatrix = toAdjacencyMatrix(*this);
+    std::vector<std::vector<int>> adjMatrix = get_matrix();
 
     for (size_t i = 0; i < adjMatrix.size(); ++i) {
         for (size_t j = 0; j < adjMatrix[i].size(); ++j) {
@@ -502,7 +400,7 @@ Graph& Graph::operator/=(int scalar) {
     return *this;
 }
     Graph Graph::operator*=(int scalar) {
-    std::vector<std::vector<int>> adjMatrix = toAdjacencyMatrix(*this);
+    std::vector<std::vector<int>> adjMatrix = get_matrix();
 
     for (size_t i = 0; i < adjMatrix.size(); ++i) {
         for (size_t j = 0; j < adjMatrix[i].size(); ++j) {
@@ -513,6 +411,11 @@ Graph& Graph::operator/=(int scalar) {
     this->loadGraph(adjMatrix); // Assuming a method to update the graph from an adjacency matrix
     return *this;
 }
-    }
+ }
+
+
+
+
+
 
 
