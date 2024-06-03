@@ -16,18 +16,28 @@ namespace ariel
     {
         public:
 
-            static std::string isConnected( Graph g);
-            static std::string shortestPath( Graph g,int start,int end);
-            static std::string isContainsCycle( Graph g);
+            static std::string isConnected(const Graph g);
+            static std::string shortestPath(const Graph& graph, int source, int destination); 
+            static std::string isContainsCycle( const Graph g) ;
             static std::string isBipartite( Graph g);
-            static std::string negativeCycle( Graph g);
+            static std::string negativeCycle( const Graph& g);
             
+
+
+
         private:
-        static void DFS(Vertex& v, std::vector<bool>& visited);
-            static std::vector<int> BFS(Graph g,int source, int destination); 
-            static std::vector<int> Dijkstra(Graph g, int source, int destination); 
-            static bool isCyclic(Vertex v, std::vector<bool>& visited, std::vector<int>& parent, std::vector<Vertex>& cycle); 
-            static bool hasNegativeCycle(Graph g,Vertex src);   
+
+            // static bool dfs(const std::vector<std::vector<int>> &matrix, std::vector<bool> &visited, int start);
+            static void dfs(const std::vector<std::vector<int>> &matrix, std::vector<bool> &visited, int start) ;
+            static bool isUnweighted(const std::vector<std::vector<int>> &matrix) ;
+            static bool hasCycleDFS(const std::vector<std::vector<int>>& graph, std::vector<bool>& visited, std::vector<int>& path, int node, int parent, std::string &cycle);
+            static  std::string bfsShortestPath(const std::vector<std::vector<int>> &matrix, int start, int target);
+            static std::string dijkstra(const std::vector<std::vector<int>> &matrix, int start, int target) ;
+            static  std::string constructPath(const std::vector<int> &parent, int start, int target) ;
+            static std::string bellmanFord(const std::vector<std::vector<int>> &matrix, int start, int target) ;
+            static bool hasNegativeWeights(const std::vector<std::vector<int>> &matrix) ;
+            
+            
 
 
     };
