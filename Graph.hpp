@@ -5,6 +5,8 @@
 #define GRAPH_HPP
 
 #include <vector>
+#include <iostream>
+
 namespace ariel
 {
 
@@ -30,7 +32,7 @@ class Graph {
 
         bool get_isWeighted()const;
         void loadGraph(const std::vector<std::vector<int>>& adj_Mat);
-        std::string printGraph();
+        std::string printGraph()const;
         void isSameSize(const Graph& g1,  const Graph& g2) const;
 
         Graph operator+(const Graph& other) const;
