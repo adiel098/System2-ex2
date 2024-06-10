@@ -25,14 +25,18 @@ std::string Algorithms::isConnected(const Graph g)
 
         if(g.get_matrix().size()==0||g.get_matrix().size()==1)
                 return "1";
-        // Start DFS from the first vertex
-        dfs(g.get_matrix(), visited, 0);
+      for (int ver=0;ver<g.get_matrix().size();ver++)
+        {
+            // Start DFS all on the  vertices
 
-        // Check if all vertices are visited
-        for (bool v : visited) {
-            if (!v) {
-                return "0";  // If any vertex is not visited, the graph is not connected
-            }
+            dfs(g.get_matrix(), visited, ver);
+
+            // Check if all vertices are visited
+            for (bool v : visited) {
+                if (!v) {
+                    return "0";  // If any vertex is not visited, the graph is not connected
+                }
+        }
         }
 
         return "1";  // All vertices were visited
