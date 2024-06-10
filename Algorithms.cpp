@@ -53,7 +53,7 @@ std::string Algorithms::shortestPath(const Graph& graph, int source, int destina
             // Weighted graph using adjacency list
             return dijkstra(graph.get_matrix(), source, destination);
         } 
-     
+     return "";
         
 }
  bool Algorithms::isUnweighted(const std::vector<std::vector<int>> &matrix) {
